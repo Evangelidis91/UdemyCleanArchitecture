@@ -3,19 +3,30 @@ package com.evangelidis.udemycleanarchitecture
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import com.evangelidis.udemycleanarchitecture.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var viewModel: MainActivityViewModel
+    private lateinit var viewModelFactory: MainActivityViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.student = getStudent()
+        viewModelFactory = MainActivityViewModelFactory(125)
+
+        viewModel = ViewModelProvider(this, viewModelFactory).get(MainActivityViewModel::class.java)
+
+        binding.totalAmount.text = viewModel.getCurrentCount()
+
+        binding.addButton.setOnClickListener {
+            viewModel.updateAmount(binding.inputValue.text.toString())
+            binding.totalAmount.text = viewModel.getCurrentCount()
+            binding.inputValue.text.clear()
+        }
     }
 
-    private fun getStudent(): Student {
-        return Student(1, "Alex", "alex@gmail.com")
-    }
+
 }
